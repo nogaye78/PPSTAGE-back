@@ -12,7 +12,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-key-change-me')
 # DEBUG est True en local, mais sera False sur Render
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*'] # À restreindre plus tard avec l'URL de Render
+ALLOWED_HOSTS = ['*'] # À relus tard avec l'URL de Render
 
 
 # --- APPLICATIONS ---
