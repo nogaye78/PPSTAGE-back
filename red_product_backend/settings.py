@@ -97,14 +97,13 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# --- CORS (IMPORTANT POUR VERCEL) ---
-CORS_ALLOW_ALL_ORIGINS = False 
 CORS_ALLOWED_ORIGINS = [
-    "https://ppstage-front-88lr.vercel.app", # Domaine exact sans /login
-    "http://localhost:3000",
     "http://localhost:5173",
+    "http://localhost:5174",
+    "https://ton-site-vercel.vercel.app", # <--- Ton URL frontend SANS slash à la fin
 ]
 
+CORS_ALLOW_ALL_ORIGINS = False
 # --- INTERNATIONALISATION ---
 LANGUAGE_CODE = 'fr-fr'
 TIME_ZONE = 'UTC'
