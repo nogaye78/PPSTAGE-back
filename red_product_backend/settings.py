@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # Librairies tierces
-    'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     
@@ -103,6 +102,10 @@ SIMPLE_JWT = {
 
 # --- CORS ---
 CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOWED_ORIGINS = [
+    "https://ppstage-front-88lr.vercel.app/login",
+    "http://localhost:3000", # Pour tes tests locaux
+]
 
 # --- INTERNATIONALISATION ---
 LANGUAGE_CODE = 'fr-fr'
