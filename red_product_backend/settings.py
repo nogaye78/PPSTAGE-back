@@ -9,10 +9,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # --- SÉCURITÉ ---
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-votre-cle-locale-tres-secrete')
 
-# DEBUG est True en local, et False sur Render si tu ajoutes la variable d'env DEBUG=False
+# DEBUG est False sur Render (via variable d'env) et True en local
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
+# Liste des hôtes autorisés (Remplace par ton URL Render réelle)
+ALLOWED_HOSTS = [
+    'red-product-backend.onrender.com', 
+    'localhost', 
+    '127.0.0.1',
+    '*' # Tu peux laisser '*' temporairement pour le test, puis restreindre
+]
 
 # --- APPLICATIONS ---
 INSTALLED_APPS = [
@@ -24,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # Librairies tierces
+    'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     
@@ -35,8 +42,8 @@ INSTALLED_APPS = [
 # --- MIDDLEWARES ---
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Pour les fichiers statiques sur Render
-    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Indispensable pour Render
+    'corsheaders.middleware.CorsMiddleware',       # Doit être avant CommonMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,8 +73,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'red_product_backend.wsgi.application'
 
 # --- CONFIGURATION BASE DE DONNÉES (HYBRIDE) ---
-# Sur Render, DATABASE_URL sera détecté automatiquement.
-# En local, on utilise SQLite pour éviter les erreurs d'encodage (UnicodeDecodeError).
 if os.environ.get('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
@@ -79,14 +84,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
-# --- AUTHENTIFICATION ---
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
 
 # --- REST FRAMEWORK & JWT ---
 REST_FRAMEWORK = {
@@ -100,11 +97,12 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# --- CORS ---
-CORS_ALLOW_ALL_ORIGINS = True 
+# --- CORS (IMPORTANT POUR VERCEL) ---
+CORS_ALLOW_ALL_ORIGINS = False 
 CORS_ALLOWED_ORIGINS = [
-    "https://ppstage-front-88lr.vercel.app/login",
-    "http://localhost:3000", # Pour tes tests locaux
+    "https://ppstage-front-88lr.vercel.app", # Domaine exact sans /login
+    "http://localhost:3000",
+    "http://localhost:5173",
 ]
 
 # --- INTERNATIONALISATION ---
@@ -116,6 +114,7 @@ USE_TZ = True
 # --- FICHIERS STATIQUES (WhiteNoise) ---
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Configuration pour servir les fichiers statiques en production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # --- FICHIERS MÉDIAS ---
