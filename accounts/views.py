@@ -4,7 +4,7 @@ from rest_framework import status, permissions
 from django.contrib.auth.models import User
 
 class RegisterView(APIView):
-    permission_classes = [permissions.AllowAny]  # 🔥 public endpoint
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         username = request.data.get("username")
@@ -17,10 +17,5 @@ class RegisterView(APIView):
         if User.objects.filter(username=username).exists():
             return Response({"error": "Ce nom d'utilisateur existe déjà."}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
-        )
-
+        user = User.objects.create_user(username=username, email=email, password=password)
         return Response({"message": "Compte créé avec succès !"}, status=status.HTTP_201_CREATED)
