@@ -100,8 +100,9 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://ton-site-vercel.vercel.app", # <--- Ton URL frontend SANS slash à la fin
+    "https://ppstage-front-88lr.vercel.app",
 ]
+
 
 CORS_ALLOW_ALL_ORIGINS = False
 # --- INTERNATIONALISATION ---
