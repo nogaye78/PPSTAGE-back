@@ -7,8 +7,12 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- SÉCURITÉ ---
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-votre-cle-locale-tres-secrete')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY doit être définie dans les variables d'environnement")
+
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
 ALLOWED_HOSTS = [
     'red-product-backend-w5ko.onrender.com',
     'localhost',
@@ -24,13 +28,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     # Librairies
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     'cloudinary',
-
     # Apps
     'accounts',
     'hotels',
@@ -88,21 +90,24 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ),
 }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 # --- CORS ---
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "http://127.0.0.1:5173",  # Ajouté pour éviter les erreurs CORS locales
+    "http://127.0.0.1:5173",
     "http://localhost:5174",
     "https://ppstage-front-88lr.vercel.app",
 ]
-CORS_ALLOW_ALL_ORIGINS = False
 
 # --- EMAIL ---
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -129,14 +134,31 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # --- CLOUDINARY STORAGE ---
-# Correction du CLOUD_NAME basé sur ta capture d'écran
+# ✅ TOUTES les valeurs doivent venir des variables d'environnement
 CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME", "dqcc8n1th"), 
-    "API_KEY": os.environ.get("CLOUDINARY_API_KEY", "116464926842617"),
-    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET", "OaVu8l9ZjGZBq1EYAz0dncGwyG8"),
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
+
+# Vérification que toutes les clés Cloudinary sont présentes
+if not all([
+    CLOUDINARY_STORAGE["CLOUD_NAME"],
+    CLOUDINARY_STORAGE["API_KEY"],
+    CLOUDINARY_STORAGE["API_SECRET"]
+]):
+    raise ValueError("Toutes les variables Cloudinary doivent être définies (CLOUD_NAME, API_KEY, API_SECRET)")
 
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # --- DEFAULT AUTO FIELD ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- SÉCURITÉ SUPPLÉMENTAIRE EN PRODUCTION ---
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
