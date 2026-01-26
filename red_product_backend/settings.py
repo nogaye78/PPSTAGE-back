@@ -17,6 +17,7 @@ ALLOWED_HOSTS = [
 
 # --- APPLICATIONS ---
 INSTALLED_APPS = [
+    'cloudinary_storage',  # 1. Toujours en premier pour les fichiers média
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,7 +30,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'cloudinary',
-    'cloudinary_storage',
 
     # Apps
     'accounts',
@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # ⚠ doit être avant CommonMiddleware
+    'corsheaders.middleware.CorsMiddleware',  # Doit être avant CommonMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -98,6 +98,7 @@ SIMPLE_JWT = {
 # --- CORS ---
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://127.0.0.1:5173",  # Ajouté pour éviter les erreurs CORS locales
     "http://localhost:5174",
     "https://ppstage-front-88lr.vercel.app",
 ]
@@ -128,8 +129,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # --- CLOUDINARY STORAGE ---
+# Correction du CLOUD_NAME basé sur ta capture d'écran
 CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME", "red-product"),
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME", "dqcc8n1th"), 
     "API_KEY": os.environ.get("CLOUDINARY_API_KEY", "116464926842617"),
     "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET", "OaVu8l9ZjGZBq1EYAz0dncGwyG8"),
 }
