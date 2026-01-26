@@ -3,21 +3,16 @@ from pathlib import Path
 from datetime import timedelta
 import dj_database_url
 
-# Chemin de base du projet
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- SÉCURITÉ ---
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-votre-cle-locale-tres-secrete')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# DEBUG est False sur Render (via variable d'env) et True en local
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-
-# Liste des hôtes autorisés (Remplace par ton URL Render réelle)
 ALLOWED_HOSTS = [
-    'red-product-backend.onrender.com', 
-    'localhost', 
+    'red-product-backend-w5ko.onrender.com',
+    'localhost',
     '127.0.0.1',
-    '*' # Tu peux laisser '*' temporairement pour le test, puis restreindre
 ]
 
 # --- APPLICATIONS ---
@@ -28,22 +23,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Librairies tierces
+
+    # Librairies
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    
-    # Tes applications
+
+    # Apps
     'accounts',
     'hotels',
 ]
 
-# --- MIDDLEWARES ---
+# --- MIDDLEWARE ---
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Indispensable pour Render
-    'corsheaders.middleware.CorsMiddleware',       # Doit être avant CommonMiddleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',   # ⚠️ Doit être avant CommonMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,7 +67,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'red_product_backend.wsgi.application'
 
-# --- CONFIGURATION BASE DE DONNÉES (HYBRIDE) ---
+# --- DATABASE ---
 if os.environ.get('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
@@ -97,14 +92,15 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+# --- CORS ---
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
     "https://ppstage-front-88lr.vercel.app",
 ]
+CORS_ALLOW_ALL_ORIGINS = False
 
-
-
+# --- EMAIL ---
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -113,20 +109,18 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-CORS_ALLOW_ALL_ORIGINS = False
 # --- INTERNATIONALISATION ---
 LANGUAGE_CODE = 'fr-fr'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# --- FICHIERS STATIQUES (WhiteNoise) ---
+# --- STATIC FILES ---
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# Configuration pour servir les fichiers statiques en production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# --- FICHIERS MÉDIAS ---
+# --- MEDIA FILES ---
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
