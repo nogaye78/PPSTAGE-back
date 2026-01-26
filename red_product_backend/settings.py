@@ -3,12 +3,12 @@ from pathlib import Path
 from datetime import timedelta
 import dj_database_url
 
+# --- BASE DIR ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- SÉCURITÉ ---
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-votre-cle-locale-tres-secrete')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-
 ALLOWED_HOSTS = [
     'red-product-backend-w5ko.onrender.com',
     'localhost',
@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'cloudinary',
+    'cloudinary_storage',
 
     # Apps
     'accounts',
@@ -38,7 +40,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'corsheaders.middleware.CorsMiddleware',   # ⚠️ Doit être avant CommonMiddleware
+    'corsheaders.middleware.CorsMiddleware',  # ⚠ doit être avant CommonMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -47,6 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# --- URLS ---
 ROOT_URLCONF = 'red_product_backend.urls'
 
 TEMPLATES = [
@@ -124,4 +127,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# --- CLOUDINARY STORAGE ---
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME", "ton_cloud_name"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY", "ta_api_key"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET", "ton_api_secret"),
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+# --- DEFAULT AUTO FIELD ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
