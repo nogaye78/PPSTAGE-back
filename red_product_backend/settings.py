@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 import dj_database_url
 
+# -----------------------
+# Chemins de base
+# -----------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # -----------------------
@@ -12,9 +15,10 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 # -----------------------
-# Apps
+# Applications installées
 # -----------------------
 INSTALLED_APPS = [
+    # Apps Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -22,12 +26,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Third-party
     'rest_framework',
     'corsheaders',
     'cloudinary_storage',
     'cloudinary',
 
-    'hotels',  # ton app
+    # Vos apps
+    'hotels',  # ← ton app principale
 ]
 
 # -----------------------
@@ -35,10 +41,10 @@ INSTALLED_APPS = [
 # -----------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← impératif !
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',       # ← doit être AVANT CommonMiddleware
     'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -46,7 +52,7 @@ MIDDLEWARE = [
 ]
 
 # -----------------------
-# URLs & Templates
+# URLs et templates
 # -----------------------
 ROOT_URLCONF = 'red_product_backend.urls'
 
@@ -88,7 +94,7 @@ else:
     }
 
 # -----------------------
-# Password Validators
+# Validators mot de passe
 # -----------------------
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -98,7 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # -----------------------
-# Internationalization
+# Internationalisation
 # -----------------------
 LANGUAGE_CODE = 'fr-fr'
 TIME_ZONE = 'UTC'
@@ -106,32 +112,26 @@ USE_I18N = True
 USE_TZ = True
 
 # -----------------------
-# Static files
+# Fichiers statiques
 # -----------------------
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-STATICFILES_DIRS = []
-if os.path.exists(BASE_DIR / 'static'):
-    STATICFILES_DIRS = [BASE_DIR / 'static']
-
+STATICFILES_DIRS = [BASE_DIR / 'static'] if os.path.exists(BASE_DIR / 'static') else []
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # -----------------------
 # Media / Cloudinary
 # -----------------------
 MEDIA_URL = '/media/'
-
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
-
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # -----------------------
-# REST Framework
+# Django REST Framework
 # -----------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -144,21 +144,51 @@ REST_FRAMEWORK = {
 }
 
 # -----------------------
-# CORS
+# CORS - CONFIGURATION CORRIGÉE
 # -----------------------
 CORS_ALLOWED_ORIGINS = [
-    'https://votre-frontend.vercel.app',
-    'http://localhost:3000',
+    'http://localhost:5173',                      # dev React local
+    'http://localhost:3000',                      # dev React standard
+    'https://ppstage-front-881r.vercel.app',     # ✅ CORRIGÉ (était 88lr)
 ]
+
 CORS_ALLOW_CREDENTIALS = True
 
+# Headers autorisés pour les requêtes CORS
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+# Méthodes HTTP autorisées
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
 # -----------------------
-# Security settings prod
+# Sécurité production
 # -----------------------
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    # Configuration supplémentaire pour CORS en production
+    CORS_ALLOW_ALL_ORIGINS = False  # Sécurité : seulement les origines définies
 
+# -----------------------
+# Clé primaire par défaut
+# -----------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
