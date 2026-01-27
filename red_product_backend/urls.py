@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('accounts.urls')),
-    path('api/', include('hotels.urls')), # 👈 Ajoutez cette ligne manquante
+    path('api/', include('hotels.urls')), 
 ]
 
 # Indispensable pour voir les images en local

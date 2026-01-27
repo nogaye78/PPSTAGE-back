@@ -4,7 +4,7 @@ from datetime import timedelta
 import dj_database_url
 from dotenv import load_dotenv
 
-# --- CHARGEMENT .env ---
+# --- CHARGEMENT DU .env ---
 load_dotenv()
 
 # --- BASE DIR ---
@@ -118,12 +118,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 # --- STATIC FILES ---
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # --- MEDIA / CLOUDINARY ---
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
     "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
