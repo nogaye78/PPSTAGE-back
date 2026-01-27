@@ -149,7 +149,7 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',                      # dev React local
     'http://localhost:3000',                      # dev React standard
-    'https://ppstage-front-881r.vercel.app',     # ✅ CORRIGÉ (était 88lr)
+    'https://ppstage-front-881r.vercel.app',     # ✅ frontend Vercel prod
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -176,6 +176,12 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
+
+# Configuration des cookies pour CORS
+SESSION_COOKIE_SAMESITE = 'None'  # ✅ Important pour cross-origin
+SESSION_COOKIE_SECURE = True if not DEBUG else False
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True if not DEBUG else False
 
 # -----------------------
 # Sécurité production
