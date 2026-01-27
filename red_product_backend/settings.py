@@ -26,23 +26,23 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third-party
+    # Third-party - ✅ ORDRE MODIFIÉ
+    'corsheaders',  # ← EN PREMIER dans les third-party
     'rest_framework',
-    'corsheaders',
     'cloudinary_storage',
     'cloudinary',
 
     # Vos apps
-    'hotels',  # ← ton app principale
+    'hotels',
 ]
 
 # -----------------------
 # Middleware
 # -----------------------
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',       # ✅ TOUJOURS EN PREMIER
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'corsheaders.middleware.CorsMiddleware',       # ← doit être AVANT CommonMiddleware
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -144,14 +144,21 @@ REST_FRAMEWORK = {
 }
 
 # -----------------------
-# CORS
+# CORS - CONFIGURATION ULTRA-PERMISSIVE POUR DEBUG ✅
 # -----------------------
+
+# ✅ TEMPORAIRE : Autoriser TOUTES les origines pour tester
+CORS_ALLOW_ALL_ORIGINS = True  # ⚠️ À désactiver après résolution du problème
+
+# Configuration de secours (sera ignorée si CORS_ALLOW_ALL_ORIGINS = True)
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',                   # dev React local
-    'http://localhost:3000',                   # dev React standard
-    'https://ppstage-front-881r.vercel.app',  # frontend Vercel prod (✅ CORRIGÉ)
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://ppstage-front-881r.vercel.app',
 ]
+
 CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -163,6 +170,7 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -172,6 +180,8 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
+CORS_PREFLIGHT_MAX_AGE = 86400
+
 # -----------------------
 # Sécurité production
 # -----------------------
@@ -180,8 +190,16 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SAMESITE = 'None'  # ✅ AJOUTÉ pour CORS cross-domain
-    CSRF_COOKIE_SAMESITE = 'None'     # ✅ AJOUTÉ pour CORS cross-domain
+    SESSION_COOKIE_SAMESITE = 'None'
+    CSRF_COOKIE_SAMESITE = 'None'
+    CSRF_TRUSTED_ORIGINS = [
+        'https://ppstage-front-881r.vercel.app',
+        'https://red-product-backend-w5ko.onrender.com',
+    ]
+else:
+    # ✅ En développement, désactiver certaines restrictions
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SAMESITE = 'Lax'
 
 # -----------------------
 # Clé primaire par défaut
