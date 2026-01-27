@@ -3,4 +3,4 @@ from .models import Hotel
 
 @admin.register(Hotel)
 class HotelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'location', 'price')
+    list_display = ('name', 'address', 'price', 'created_by')
