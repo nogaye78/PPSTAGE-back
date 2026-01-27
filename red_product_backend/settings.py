@@ -144,17 +144,14 @@ REST_FRAMEWORK = {
 }
 
 # -----------------------
-# CORS - CONFIGURATION CORRIGÉE
+# CORS
 # -----------------------
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',                      # dev React local
-    'http://localhost:3000',                      # dev React standard
-    'https://ppstage-front-881r.vercel.app',     # ✅ frontend Vercel prod
+    'http://localhost:5173',                   # dev React local
+    'http://localhost:3000',                   # dev React standard
+    'https://ppstage-front-881r.vercel.app',  # frontend Vercel prod (✅ CORRIGÉ)
 ]
-
 CORS_ALLOW_CREDENTIALS = True
-
-# Headers autorisés pour les requêtes CORS
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -166,8 +163,6 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
-
-# Méthodes HTTP autorisées
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -177,12 +172,6 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-# Configuration des cookies pour CORS
-SESSION_COOKIE_SAMESITE = 'None'  # ✅ Important pour cross-origin
-SESSION_COOKIE_SECURE = True if not DEBUG else False
-CSRF_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SECURE = True if not DEBUG else False
-
 # -----------------------
 # Sécurité production
 # -----------------------
@@ -191,8 +180,8 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    # Configuration supplémentaire pour CORS en production
-    CORS_ALLOW_ALL_ORIGINS = False  # Sécurité : seulement les origines définies
+    SESSION_COOKIE_SAMESITE = 'None'  # ✅ AJOUTÉ pour CORS cross-domain
+    CSRF_COOKIE_SAMESITE = 'None'     # ✅ AJOUTÉ pour CORS cross-domain
 
 # -----------------------
 # Clé primaire par défaut
