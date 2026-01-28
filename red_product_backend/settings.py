@@ -146,14 +146,21 @@ REST_FRAMEWORK = {
 # -----------------------
 # CORS - CONFIGURATION COMPLÈTE ✅
 # -----------------------
-CORS_ALLOW_ALL_ORIGINS = False  # Sécurisé
+# ⚠️ TEMPORAIRE : Autoriser TOUS les domaines pour debug
+CORS_ALLOW_ALL_ORIGINS = True
 
+# Configuration de secours (sera ignorée tant que CORS_ALLOW_ALL_ORIGINS = True)
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:3000',
-    'https://ppstage-front-88lr.vercel.app',   # ✅ URL correcte
-    'https://ppstage-front-881r.vercel.app',   # ✅ URL de backup
 ]
+
+# ✅ Pour plus tard : fonction pour autoriser uniquement Vercel
+# def cors_allow_vercel(origin, allowed_origins):
+#     if origin in allowed_origins or (origin and origin.endswith('.vercel.app')):
+#         return True
+#     return False
+# CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://.*\.vercel\.app$"]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -193,10 +200,9 @@ if not DEBUG:
     SESSION_COOKIE_SAMESITE = 'None'
     CSRF_COOKIE_SAMESITE = 'None'
     
-    # ✅ CSRF : Origines de confiance
+    # ✅ CSRF : Autoriser TOUS les domaines Vercel (temporaire)
     CSRF_TRUSTED_ORIGINS = [
-        'https://ppstage-front-88lr.vercel.app',
-        'https://ppstage-front-881r.vercel.app',
+        'https://*.vercel.app',  # ← Tous les déploiements Vercel
         'https://red-product-backend-w5ko.onrender.com',
     ]
     
