@@ -26,8 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third-party - ✅ ORDRE MODIFIÉ
-    'corsheaders',  # ← EN PREMIER dans les third-party
+    # Third-party - ORDRE IMPORTANT
+    'corsheaders',  # ← EN PREMIER
     'rest_framework',
     'cloudinary_storage',
     'cloudinary',
@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 # Middleware
 # -----------------------
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',       # ✅ TOUJOURS EN PREMIER
+    'corsheaders.middleware.CorsMiddleware',       # ✅ EN PREMIER - CRITIQUE
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -144,17 +144,15 @@ REST_FRAMEWORK = {
 }
 
 # -----------------------
-# CORS - CONFIGURATION ULTRA-PERMISSIVE POUR DEBUG ✅
+# CORS - CONFIGURATION COMPLÈTE ✅
 # -----------------------
+CORS_ALLOW_ALL_ORIGINS = False  # Sécurisé
 
-# ✅ TEMPORAIRE : Autoriser TOUTES les origines pour tester
-CORS_ALLOW_ALL_ORIGINS = True  # ⚠️ À désactiver après résolution du problème
-
-# Configuration de secours (sera ignorée si CORS_ALLOW_ALL_ORIGINS = True)
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:3000',
-    'https://ppstage-front-881r.vercel.app',
+    'https://ppstage-front-88lr.vercel.app',   # ✅ URL correcte
+    'https://ppstage-front-881r.vercel.app',   # ✅ URL de backup
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -183,23 +181,39 @@ CORS_ALLOW_METHODS = [
 CORS_PREFLIGHT_MAX_AGE = 86400
 
 # -----------------------
-# Sécurité production
+# Sécurité production - ✅ SECTION CRITIQUE CORRIGÉE
 # -----------------------
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    
+    # ✅ Configuration des cookies pour cross-domain
     SESSION_COOKIE_SAMESITE = 'None'
     CSRF_COOKIE_SAMESITE = 'None'
+    
+    # ✅ CSRF : Origines de confiance
     CSRF_TRUSTED_ORIGINS = [
+        'https://ppstage-front-88lr.vercel.app',
         'https://ppstage-front-881r.vercel.app',
         'https://red-product-backend-w5ko.onrender.com',
     ]
+    
+    # ✅ Permettre les cookies cross-domain
+    SESSION_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_HTTPONLY = False  # ← Important : JS doit pouvoir lire le CSRF token
+    
 else:
-    # ✅ En développement, désactiver certaines restrictions
+    # Configuration développement
     SESSION_COOKIE_SAMESITE = 'Lax'
     CSRF_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    CSRF_TRUSTED_ORIGINS = [
+        'http://localhost:5173',
+        'http://localhost:3000',
+    ]
 
 # -----------------------
 # Clé primaire par défaut
