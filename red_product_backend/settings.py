@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 from datetime import timedelta
-from decouple import config
 
 # -----------------------
 # Chemins de base
@@ -11,9 +10,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -----------------------
 # Sécurité
 # -----------------------
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key')
-DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-dev-key")
+DEBUG = os.environ.get("DEBUG", "True") == "True"
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # -----------------------
 # Applications installées
@@ -154,7 +153,7 @@ SIMPLE_JWT = {
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE': True,
-    'SEND_ACTIVATION_EMAIL': False,  # IMPORTANT pour éviter le blocage
+    'SEND_ACTIVATION_EMAIL': False,
     'SERIALIZERS': {
         'user_create': 'hotels.serializers.CustomUserCreateSerializer',
         'user': 'hotels.serializers.CustomUserSerializer',
