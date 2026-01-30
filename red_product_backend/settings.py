@@ -12,12 +12,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -----------------------
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-dev-key")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1,red-product-backend-w5ko.onrender.com"
+).split(",")
 
 # -----------------------
 # Applications installées
 # -----------------------
 INSTALLED_APPS = [
+    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -148,12 +152,12 @@ SIMPLE_JWT = {
 }
 
 # -----------------------
-# Djoser Configuration
+# Djoser Configuration (CORRIGÉ)
 # -----------------------
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE': True,
-    'SEND_ACTIVATION_EMAIL': False,
+    'SEND_ACTIVATION_EMAIL': False,  # ✅ Désactivé pour éviter les blocages de connexion
     'SERIALIZERS': {
         'user_create': 'hotels.serializers.CustomUserCreateSerializer',
         'user': 'hotels.serializers.CustomUserSerializer',
@@ -163,20 +167,14 @@ DJOSER = {
 }
 
 # -----------------------
-# CORS & CSRF
+# CORS & CSRF (CORRIGÉ)
 # -----------------------
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-]
-
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True  # ✅ Pour test et production
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
-    "https://tonfrontend.vercel.app",
+    "https://ppstage-front-88lr.vercel.app",
 ]
 
 CSRF_COOKIE_SAMESITE = 'Lax'
@@ -185,7 +183,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SECURE = False
 
 # -----------------------
-# Emails (développement)
+# Emails
 # -----------------------
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'admin@monapp.com'
