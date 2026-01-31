@@ -1,27 +1,32 @@
-from django.contrib.auth import get_user_model
-from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
-from .models import Hotel
+from .models import Hotel, CustomUser  # Assure-toi que CustomUser est bien importé
 
-User = get_user_model()
+# --- Serializer pour CustomUser (affichage) ---
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'email', 'first_name', 'last_name']  # adapte selon ton modèle
 
-# -----------------------
-# User serializers
-# -----------------------
-class CustomUserCreateSerializer(UserCreateSerializer):
-    class Meta(UserCreateSerializer.Meta):
-        model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'password')
+# --- Serializer pour CustomUser lors de la création ---
+class CustomUserCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'email', 'password', 'first_name', 'last_name']
+        extra_kwargs = {'password': {'write_only': True}}
 
-class CustomUserSerializer(UserSerializer):
-    class Meta(UserSerializer.Meta):
-        model = User
-        fields = ('id', 'email', 'first_name', 'last_name')
+    def create(self, validated_data):
+        user = CustomUser.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', '')
+        )
+        return user
 
-# -----------------------
-# Hotel serializer
-# -----------------------
+# --- Serializer pour Hotel ---
 class HotelSerializer(serializers.ModelSerializer):
+    owner = CustomUserSerializer(read_only=True)
+
     class Meta:
         model = Hotel
         fields = '__all__'

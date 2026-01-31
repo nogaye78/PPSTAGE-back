@@ -5,7 +5,7 @@ from .serializers import HotelSerializer
 class HotelViewSet(viewsets.ModelViewSet):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]  # <-- lecture publique, écriture protégée
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
