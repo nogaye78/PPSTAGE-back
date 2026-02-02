@@ -1,5 +1,6 @@
 from pathlib import Path
 from decouple import config
+import dj_database_url
 
 # -----------------------
 # BASE_DIR
@@ -83,17 +84,14 @@ TEMPLATES = [
 WSGI_APPLICATION = "red_product_backend.wsgi.application"
 
 # -----------------------
-# DATABASE (PostgreSQL)
+# DATABASE (Render compatible)
 # -----------------------
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": config("DB_NAME"),
-        "USER": config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
-        "HOST": config("DB_HOST"),
-        "PORT": config("DB_PORT", cast=int),
-    }
+    "default": dj_database_url.config(
+        default=config("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 # -----------------------
@@ -139,13 +137,13 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
-    "EXCEPTION_HANDLER": "hotels.utils.custom_exception_handler",  # gérer friendly errors
+    "EXCEPTION_HANDLER": "hotels.utils.custom_exception_handler",
 }
 
 # -----------------------
 # DJOSER (Activation + Reset)
 # -----------------------
-DOMAIN = "localhost:5173"  # Front React
+DOMAIN = "localhost:5173"
 SITE_NAME = "PPSTAGE"
 
 DJOSER = {
@@ -156,7 +154,7 @@ DJOSER = {
         "user": "hotels.serializers.CustomUserSerializer",
     },
     "SEND_ACTIVATION_EMAIL": True,
-    "ACTIVATION_URL": "activate/{uid}/{token}/",  # chemin relatif vers React
+    "ACTIVATION_URL": "activate/{uid}/{token}/",
     "PASSWORD_RESET_CONFIRM_URL": "reset-password/{uid}/{token}/",
 }
 
@@ -180,6 +178,7 @@ CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="http://localhost:
 # DEFAULT AUTO FIELD
 # -----------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 
 
