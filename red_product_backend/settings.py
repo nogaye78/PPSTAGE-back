@@ -1,6 +1,5 @@
 from pathlib import Path
 from decouple import config
-import dj_database_url
 
 # -----------------------
 # BASE_DIR
@@ -11,8 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET / DEBUG / ALLOWED_HOSTS
 # -----------------------
 SECRET_KEY = config("SECRET_KEY")
-DEBUG = config("DEBUG", cast=bool)
-ALLOWED_HOSTS = config("ALLOWED_HOSTS").split(",")
+DEBUG = config("DEBUG", cast=bool, default=True)
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",")
 
 # -----------------------
 # APPLICATIONS
@@ -33,7 +32,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "cloudinary",
     "cloudinary_storage",
-    "django_extensions",  # Pour show_urls
+    "django_extensions",
 
     # Custom apps
     "hotels",
@@ -140,11 +139,15 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
+    "EXCEPTION_HANDLER": "hotels.utils.custom_exception_handler",  # gérer friendly errors
 }
 
 # -----------------------
-# DJOSER (Activation Email + JWT)
+# DJOSER (Activation + Reset)
 # -----------------------
+DOMAIN = "localhost:5173"  # Front React
+SITE_NAME = "PPSTAGE"
+
 DJOSER = {
     "USER_ID_FIELD": "id",
     "LOGIN_FIELD": "email",
@@ -152,19 +155,16 @@ DJOSER = {
         "user_create": "hotels.serializers.CustomUserCreateSerializer",
         "user": "hotels.serializers.CustomUserSerializer",
     },
-    "TOKEN_MODEL": None,  # JWT utilisera SimpleJWT
-
-    # Activation email
     "SEND_ACTIVATION_EMAIL": True,
-    "ACTIVATION_URL": "http://localhost:5173/activate/{uid}/{token}/",  # Front dev
-    "PASSWORD_RESET_CONFIRM_URL": "http://localhost:5173/reset-password/{uid}/{token}/",
+    "ACTIVATION_URL": "activate/{uid}/{token}/",  # chemin relatif vers React
+    "PASSWORD_RESET_CONFIRM_URL": "reset-password/{uid}/{token}/",
 }
 
 # -----------------------
-# EMAIL SMTP (Gmail pour vrai email)
+# EMAIL (SMTP Gmail)
 # -----------------------
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
@@ -174,12 +174,15 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # -----------------------
 # CORS
 # -----------------------
-CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS").split(",")
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="http://localhost:5173").split(",")
 
 # -----------------------
-# DEFAULT_AUTO_FIELD
+# DEFAULT AUTO FIELD
 # -----------------------
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+
 
 
 
