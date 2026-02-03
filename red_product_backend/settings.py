@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -----------------------
 # Security
 # -----------------------
-SECRET_KEY = config("SECRET_KEY", default="ta-nouvelle-cle-secrete")
+SECRET_KEY = config("SECRET_KEY", default="django-insecure-dev-key")
 DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
@@ -95,16 +95,17 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": config("DB_NAME", default="red_product_new"),
         "USER": config("DB_USER", default="postgres"),
-        "PASSWORD": config("DB_PASSWORD", default="nogaye2002"),
+        "PASSWORD": config("DB_PASSWORD", default="password"),
         "HOST": config("DB_HOST", default="127.0.0.1"),
         "PORT": config("DB_PORT", default="5432"),
     }
 }
 
-# Pour Render ou autre hébergeur
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
-    DATABASES["default"] = dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+    DATABASES["default"] = dj_database_url.parse(
+        DATABASE_URL, conn_max_age=600, ssl_require=True
+    )
 
 # -----------------------
 # Password validation
@@ -138,9 +139,9 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 # Cloudinary
 # -----------------------
 CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME", default="dqcc8n1th"),
-    "API_KEY": config("CLOUDINARY_API_KEY", default="ta_cle_cloudinary"),
-    "API_SECRET": config("CLOUDINARY_API_SECRET", default="ton_secret_cloudinary"),
+    "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": config("CLOUDINARY_API_KEY"),
+    "API_SECRET": config("CLOUDINARY_API_SECRET"),
 }
 
 # -----------------------
@@ -177,19 +178,19 @@ DJOSER = {
     "SET_PASSWORD_RETYPE": True,
     "PASSWORD_RESET_CONFIRM_RETYPE": True,
     "LOGOUT_ON_PASSWORD_CHANGE": True,
-    "ACTIVATION_URL": "activate/{uid}/{token}",
-    "SERIALIZERS": {},
+    # Lien d’activation → FRONTEND React
+    "ACTIVATION_URL": "https://ppstage-front-88lr.vercel.app/activate/{uid}/{token}",
 }
 
 # -----------------------
-# Email (Gmail SMTP)
+# Email définitif (Gmail SMTP)
 # -----------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="nogayedev02@gmail.com")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="omrx tivj iltp zwiy")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # -----------------------
@@ -202,13 +203,8 @@ CORS_ALLOWED_ORIGINS = config(
 )
 CORS_ALLOW_CREDENTIALS = True
 
+
 # -----------------------
 # Default primary key
 # -----------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-
-
-# source venv/Scripts/activate
-# python manage.py runserver

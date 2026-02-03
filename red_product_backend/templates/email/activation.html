@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Activation du compte</title>
+</head>
+<body>
+  <p>Bonjour {{ user.email }},</p>
+  <p>Cliquez sur ce lien pour activer votre compte :</p>
+  <p>
+    <a href="{{ protocol }}://{{ domain }}/activate/{{ uid }}/{{ token }}">
+      Activer mon compte
+    </a>
+  </p>
+</body>
+</html>
