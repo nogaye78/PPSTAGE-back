@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security
 # -----------------------
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-dev-key")
-DEBUG = config("DEBUG", default=True, cast=bool)
+DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
     default="127.0.0.1,localhost,red-product-backend-w5ko.onrender.com",
@@ -88,16 +88,16 @@ WSGI_APPLICATION = "red_product_backend.wsgi.application"
 ASGI_APPLICATION = "red_product_backend.asgi.application"
 
 # -----------------------
-# Database
+# Database PostgreSQL (Render)
 # -----------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DB_NAME", default="red_product_new"),
-        "USER": config("DB_USER", default="postgres"),
-        "PASSWORD": config("DB_PASSWORD", default="password"),
-        "HOST": config("DB_HOST", default="127.0.0.1"),
-        "PORT": config("DB_PORT", default="5432"),
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST"),
+        "PORT": config("DB_PORT"),
     }
 }
 
@@ -183,7 +183,7 @@ DJOSER = {
 }
 
 # -----------------------
-# Email définitif (Gmail SMTP)
+# Email SMTP (Gmail)
 # -----------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
@@ -198,11 +198,10 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # -----------------------
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
-    default="http://localhost:5173,http://127.0.0.1:5173,https://ppstage-front-88lr.vercel.app",
+    default="https://ppstage-front-88lr.vercel.app",
     cast=Csv()
 )
 CORS_ALLOW_CREDENTIALS = True
-
 
 # -----------------------
 # Default primary key
