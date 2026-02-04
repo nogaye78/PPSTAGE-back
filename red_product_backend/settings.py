@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from datetime import timedelta
-from decouple import config, Csv
+from decouple import config
 import dj_database_url
 
 # -----------------------
@@ -13,12 +13,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security
 # -----------------------
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-dev-key")
-DEBUG = config("DEBUG", default=False, cast=bool)
-ALLOWED_HOSTS = config(
-    "ALLOWED_HOSTS",
-    default="127.0.0.1,localhost,red-product-backend-w5ko.onrender.com",
-    cast=Csv()
-)
+DEBUG = config("DEBUG", default=True, cast=bool)
+
+ALLOWED_HOSTS = [
+    "127.0.0.1", 
+    "localhost", 
+    "red-product-backend-w5ko.onrender.com"
+]
 
 # -----------------------
 # Applications
@@ -33,6 +34,7 @@ INSTALLED_APPS = [
 
     # Third-party
     "rest_framework",
+    "rest_framework.authtoken",
     "corsheaders",
     "djoser",
     "django_filters",
@@ -52,8 +54,8 @@ AUTH_USER_MODEL = "hotels.CustomUser"
 # Middleware
 # -----------------------
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -63,9 +65,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# -----------------------
-# URLs / WSGI / ASGI
-# -----------------------
 ROOT_URLCONF = "red_product_backend.urls"
 
 TEMPLATES = [
@@ -88,16 +87,12 @@ WSGI_APPLICATION = "red_product_backend.wsgi.application"
 ASGI_APPLICATION = "red_product_backend.asgi.application"
 
 # -----------------------
-# Database PostgreSQL (Render)
+# Database
 # -----------------------
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DB_NAME"),
-        "USER": config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
-        "HOST": config("DB_HOST"),
-        "PORT": config("DB_PORT"),
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -106,16 +101,6 @@ if DATABASE_URL:
     DATABASES["default"] = dj_database_url.parse(
         DATABASE_URL, conn_max_age=600, ssl_require=True
     )
-
-# -----------------------
-# Password validation
-# -----------------------
-AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
-]
 
 # -----------------------
 # Language & Time
@@ -139,9 +124,9 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 # Cloudinary
 # -----------------------
 CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": config("CLOUDINARY_API_KEY"),
-    "API_SECRET": config("CLOUDINARY_API_SECRET"),
+    "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME", default=""),
+    "API_KEY": config("CLOUDINARY_API_KEY", default=""),
+    "API_SECRET": config("CLOUDINARY_API_SECRET", default=""),
 }
 
 # -----------------------
@@ -150,19 +135,11 @@ CLOUDINARY_STORAGE = {
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
-}
-
-# -----------------------
-# Simple JWT
-# -----------------------
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 # -----------------------
@@ -172,38 +149,36 @@ DJOSER = {
     "LOGIN_FIELD": "email",
     "USER_CREATE_PASSWORD_RETYPE": True,
     "SEND_ACTIVATION_EMAIL": True,
-    "SEND_CONFIRMATION_EMAIL": False,
-    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": False,
+    "SEND_CONFIRMATION_EMAIL": True,
+    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
     "USERNAME_CHANGED_EMAIL_CONFIRMATION": False,
     "SET_PASSWORD_RETYPE": True,
     "PASSWORD_RESET_CONFIRM_RETYPE": True,
     "LOGOUT_ON_PASSWORD_CHANGE": True,
-    # Lien d’activation → FRONTEND React
-    "ACTIVATION_URL": "https://ppstage-front-88lr.vercel.app/activate/{uid}/{token}",
+    "ACTIVATION_URL": "http://localhost:5173/activate/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_URL": "http://localhost:5173/password/reset/confirm/{uid}/{token}",
 }
 
 # -----------------------
-# Email SMTP (Gmail)
+# Email SMTP (GMAIL) - CONFIGURATION MISE À JOUR
 # -----------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = "nogayendao2020@gmail.com"
+# Utilisation du code de 16 caractères sans les espaces
+EMAIL_HOST_PASSWORD = "gysrnlysdxpmitqa" 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # -----------------------
 # CORS
 # -----------------------
-CORS_ALLOWED_ORIGINS = config(
-    "CORS_ALLOWED_ORIGINS",
-    default="https://ppstage-front-88lr.vercel.app",
-    cast=Csv()
-)
+CORS_ALLOWED_ORIGINS = [
+    "https://ppstage-front-88lr.vercel.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
 CORS_ALLOW_CREDENTIALS = True
 
-# -----------------------
-# Default primary key
-# -----------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
